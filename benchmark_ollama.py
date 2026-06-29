@@ -202,8 +202,7 @@ async def run_condition(
         prompt_index = request_id % len(prompts)
         prompt = prompts[prompt_index]
 
-        # Same seed for all users in the same round.
-        # This helps isolate the effect of concurrency.
+        # I fixed the seed for all users in the same round, this allows to isolate cuncurrency effect
         request_seed = seed + request_id
 
         round_started = time.perf_counter()
@@ -376,6 +375,7 @@ def make_summary(raw_df: pd.DataFrame) -> pd.DataFrame:
     return summary.sort_values(["temperature", "concurrent_users"])
 
 
+#this part is needed only for the plots i wil ladd to the pdf document
 def make_plots(summary: pd.DataFrame, outdir: Path) -> None:
     plt.figure()
     for temperature, sub in summary.groupby("temperature"):
@@ -585,7 +585,7 @@ async def main(args):
 
     async with httpx.AsyncClient(timeout=timeout) as client:
         print("Warming up Ollama model...")
-
+        #start ollama and makke a simple request as a warm up, in this way we are sure the OLLAMA server is working correctly
         warmup = await call_ollama(
             client=client,
             url=url,
